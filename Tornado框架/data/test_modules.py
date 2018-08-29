@@ -5,18 +5,18 @@ from connect import session
 from user_modules import User
 
 def add_user():
-    person = User(username='mjc', password='qwe123')
+    person = User(username='hcg', password='pom/uyt')
     # 往表中插入一条数据
     session.add(person)
     # 往表中插入多条数据
-    session.add_all(
-        [
-            User(username='hcg', password='789'),
-            User(username='mm', password='waafd'),
-            User(username='mt', password='129hhh'),
-        ]
-    )
-
+    # session.add_all(
+    #     [
+    #         User(username='hcg', password='789'),
+    #         User(username='mm', password='waafd'),
+    #         User(username='mt', password='129hhh'),
+    #     ]
+    # )
+    #
     session.commit()
 
 
@@ -39,7 +39,7 @@ def delete_user():
     session.commit()
 
 if __name__ == '__main__':
-    # add_user()
+    add_user()
     # search_user()
     # update_user()
-    delete_user()
+    # delete_user()
