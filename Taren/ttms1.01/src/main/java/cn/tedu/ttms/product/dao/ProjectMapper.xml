@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+     1.拷贝mapper文件模板
+     2.修改命名空间
+     3.修改spring-mybatis.xml配置文件
+             在sqlSessionFactory的配置文件中，
+             修改扫描mapper文件的路径
+  -->
+<mapper namespace="cn.tedu.ttms.product.dao.ProjectDao">
+ <!-- 
+     通过sql标签定义SQL内容进行复用:
+                 一般会对重复出现语句可以通过sql标签进行提取，
+                 然后再借助include元素进行包含
+ -->
+     <sql id="qw">
+             <!-- 根据查询条件进行数据统计 -->
+             <where>
+                     <if test="name!=null and name!=''">
+                        name like concat("%",#{name},"%")
+               </if>
+               <if test="valid!=null">
+                       and valid=#{valid}
+               </if>
+             </where>
+     </sql>
+     <!-- 
+        定义一个SQL实现简单查询
+            select元素中：
+            1）id 一定要与对应dao中的findPageObjects方法名
+            2）resultType对应一条记录要映射的那个对象
+        -->
+     <select id="findPageObjects" 
+                 resultType="cn.tedu.ttms.product.entity.Project">
+        select * from tms_projects
+        <include refid="qw"/>
+        order by createdTime
+        limit  #{startIndex},#{pageSize}
+     </select>
+     <!-- h获取总记录数 -->
+     <select id="getRowCount" resultType="int">
+             select count(*) from tms_projects
+             <include refid="qw"/>
+     </select>
+     <!-- 禁用启用操作 -->
+     <update id="validById">
+             update tms_projects
+             set valid=#{valid}
+             where id in 
+             <foreach collection="ids" open="(" close=")" separator=","
+               item="item">
+                   #{item}
+             </foreach>
+     </update>
+ <!-->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>-->
+ <!-- 数据的写入 -->
+ <insert id="insertObject" 
+   parameterType="cn.tedu.ttms.product.entity.Project">
+       insert into tms_projects
+       (name,
+         code,
+         beginDate,
+         endDate,
+         valid,
+         note,
+         createdTime,
+         modifiedTime,
+         createdUser,
+         modifiedUser
+       )values(
+          #{name},
+          #{code},
+          #{beginDate},
+          #{endDate},
+          #{valid},
+          #{note},
+          #{createdTime},
+          #{modifiedTime},
+          #{createdUser},
+          #{modifiedUser}
+       )
+ </insert>
+ <!-- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -->
+ <select id="findObjectById" 
+   resultType="cn.tedu.ttms.product.entity.Project">
+         select * from tms_projects
+         where id=#{id}
+ </select>
+ <!-- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -->
+ <update id="updateObjectById"
+ parameterType="cn.tedu.ttms.product.entity.Project">
+     update tms_projects
+     set name=#{name},
+           code=#{code},
+           beginDate=#{beginDate},
+           endDate=#{endDate},
+           valid=#{valid},
+           note=#{note},
+           createdTime=NOW(),
+           modifiedTime=#{modifiedTime},
+           createdUser=#{createdUser},
+           modifiedUser=#{modifiedUser}
+           where id=#{id}
+ </update>
+ 
+ <select id="findIdAndNames"
+   resultType="cn.tedu.ttms.common.vo.IdName">
+    select id,name
+    from tms_projects
+    where valid=1;
+   </select>
+</mapper> 

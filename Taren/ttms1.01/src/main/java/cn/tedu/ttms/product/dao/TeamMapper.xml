@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+     1.拷贝mapper文件模板
+     2.修改命名空间
+     3.修改spring-mybatis.xml配置文件
+             在sqlSessionFactory的配置文件中，
+             修改扫描mapper文件的路径
+  -->
+<mapper namespace="cn.tedu.ttms.product.dao.TeamDao">
+ <!-- 
+     通过sql标签定义SQL内容进行复用:
+                 一般会对重复出现语句可以通过sql标签进行提取，
+                 然后再借助include元素进行包含
+ -->
+     <sql id="qw">
+           <where>
+              <if test="projectName!=null and projectName!=''">
+                    p.name like concat("%",#{projectName},"%")
+              </if>
+           </where>
+     </sql>
+     <!-- 
+        定义一个SQL实现简单查询
+            select元素中：
+            1）id 一定要与对应dao中的findPageObjects方法名
+            2）resultType对应一条记录要映射的那个对象
+        -->
+     <!-- 没有使用分页查询，直接将查询到的数据返回给业务层
+          <select id="findPageObjects" resultType="map">
+           select t.*,p.name projectName
+           from tms_teams t join tms_projects p
+           on t.projectId=p.id
+           order by createdTime desc
+     </select> -->
+     <select id="findPageObjects" resultType="map">
+           select t.*,p.name projectName
+           from tms_teams t join tms_projects p
+           on t.projectId=p.id
+           <include refid="qw"/>
+           order by t.createdTime desc
+           limit #{startIndex},#{pageSize}
+     </select> 
+
+     <!-- 获取总记录数 -->
+     <select id="getRowCount" resultType="int">
+          select count(*) 
+          from tms_teams t join tms_projects p
+          on t.projectId=p.id
+          <include refid="qw"/>
+     </select>
+<!-- <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< -->  
+     <!-- 禁用启用操作 -->
+    
+ <!-->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>-->
+ <!-- 数据的写入 -->
+  <insert id="insertObject" parameterType="team">
+     insert into tms_teams
+     (name,projectId,valid,note,createdTime,modifiedTime) 
+     values
+     (#{name},#{projectId},#{valid},#{note},now(),now())
+   </insert>
+</mapper> 

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+     1.拷贝mapper文件模板
+     2.修改命名空间
+     3.修改spring-mybatis.xml配置文件
+             在sqlSessionFactory的配置文件中，
+             修改扫描mapper文件的路径
+  -->
+<mapper namespace="cn.tedu.ttms.product.dao.ProductTypeDao">
+ <!-- 
+     通过sql标签定义SQL内容进行复用:
+                 一般会对重复出现语句可以通过sql标签进行提取，
+                 然后再借助include元素进行包含
+ -->
+   <select id="findGridTreeNodes" resultType="map">
+        select c.*,p.name parentName
+        from tms_classes c left join tms_classes p
+        on c.parentId=p.id
+        
+   </select>
+ <!-->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>-->
+ <!-- 数据的写入 -->
+ <insert id="insertObject" parameterType="productType">
+     insert into tms_classes(name,sort,parentId,note,
+     createdUser,createdTime,modifiedUser,modifiedTime) 
+     values(#{name},#{sort},#{parentId},#{note},
+     #{createdUser},now(),#{modifiedUser},now()
+     )
+ </insert>
+ <!-- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -->
+ <select id="hasChildType" parameterType="integer"
+           resultType="int">
+       select count(*)
+       from tms_classes
+       where parentId=#{id}
+ </select>
+ <delete id="deleteObject" parameterType="integer" >
+      delete from tms_classes where id=#{id}
+ </delete>
+
+ <select id="findZTreeNodes" resultType="map">
+        select id,parentId,name
+          from tms_classes;
+</select>
+
+ <select id="findObjectById" resultType="map">
+       select c.*,p.name parentName
+       from tms_classes c left join tms_classes p
+       on c.parentId=p.id
+       where c.id=#{id}
+   </select>
+ <update id="updateObject"
+            parameterType="productType">
+        update tms_classes
+        set 
+        name=#{name},
+        parentId=#{parentId},
+        sort=#{sort},
+        note=#{note},
+        modifiedTime=NOW(),
+        modifiedUser=#{modifiedUser}
+        where id=#{id}
+    </update>
+
+ 
+</mapper> 
