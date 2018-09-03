@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        body{
+            text-align: center;
+        }
+
+         input{
+            font-size: 20px;
+        }
+        #top{
+            height: 150px;
+        }
+
+        .user{
+            margin: 10px;
+        }
+        .pwd{
+            margin: 10px;
+        }
+        .reset{
+            margin-right: 20px;
+        }
+        .ras{
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+{% if error %}
+    {{ error }}
+{% end%}
+<form action="/login" method="post">
+    <div id="top"></div>
+    <div>用户名：<input class="user" type="text" name="user"><br>
+    密&emsp;码：<input class="pwd" type="password" name="pwd"><br>
+    <div class="ras"><input class="reset" type="reset" value="清空">&emsp;<input type="submit" value="确定"></div>
+    </div>
+ </form>
+</body>
+</html>
